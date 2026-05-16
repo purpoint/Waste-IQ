@@ -5,7 +5,7 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-const connectionString = `postgresql://manannghodasara@localhost:5432/wasteiq`
+const connectionString = process.env.DATABASE_URL!
 
 const pool = new pg.Pool({ connectionString })
 const adapter = new PrismaPg(pool)
