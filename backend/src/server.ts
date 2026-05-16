@@ -6,6 +6,7 @@ import dotenv from "dotenv"
 import authRoutes from "./routes/auth.routes"
 import inventoryRoutes from "./routes/inventory.routes"
 import wasteRoutes from "./routes/waste.routes"
+import aiRoutes from "./routes/ai.routes"
 
 dotenv.config()
 
@@ -26,6 +27,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use("/api/auth", authRoutes)
 app.use("/api/inventory", inventoryRoutes)
 app.use("/api/waste", wasteRoutes)
+app.use("/api/ai", aiRoutes)
 
 // Health check
 app.get("/api/health", (req, res) => {
