@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Restaurant {
+  id          String      @id @default(cuid())
+  name        String
+  address     String?
+  phone       String?
+  email       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  users       User[]
+  inventory   Inventory[]
+  wasteLogs   WasteLog[]
+  salesData   SalesData[]
+  alerts      Alert[]
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  password     String
+  name         String
+  role         Role        @default(STAFF)
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Inventory {
+  id           String      @id @default(cuid())
+  name         String
+  quantity     Float
+  unit         String
+  expiryDate   DateTime?
+  costPrice    Float
+  category     String
+  supplier     String?
+  storageType  String
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model WasteLog {
+  id           String      @id @default(cuid())
+  itemName     String
+  quantity     Float
+  unit         String
+  reason       String
+  cost         Float
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  createdAt    DateTime    @default(now())
+}
+
+model SalesData {
+  id           String      @id @default(cuid())
+  date         DateTime
+  revenue      Float
+  orderCount   Int
+  itemsSold    Json?
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  createdAt    DateTime    @default(now())
+}
+
+model Alert {
+  id           String      @id @default(cuid())
+  type         AlertType
+  message      String
+  severity     String
+  isRead       Boolean     @default(false)
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  createdAt    DateTime    @default(now())
+}
+
+enum Role {
+  ADMIN
+  OWNER
+  STAFF
+}
+
+enum AlertType {
+  LOW_STOCK
+  EXPIRY_WARNING
+  HIGH_WASTE
+  DEMAND_SPIKE
+}
