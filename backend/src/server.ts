@@ -4,6 +4,7 @@ import helmet from "helmet"
 import morgan from "morgan"
 import dotenv from "dotenv"
 import authRoutes from "./routes/auth.routes"
+import inventoryRoutes from "./routes/inventory.routes"
 
 dotenv.config()
 
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true }))
 
 // Routes
 app.use("/api/auth", authRoutes)
+app.use("/api/inventory", inventoryRoutes)
 
 // Health check
 app.get("/api/health", (req, res) => {
