@@ -52,13 +52,13 @@ export default function DashboardLayout({
 
   if (!isAuthenticated) return null
 
-  return (
+return (
     <ErrorBoundary>
-      <div className="flex h-screen overflow-hidden" style={{ background: "#0d0d1a" }}>
+      <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "#0d0d1a" }}>
         <Sidebar />
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
           <Navbar />
-          <main className="flex-1 overflow-y-auto p-6">
+          <main style={{ flex: 1, overflowY: "auto", padding: "16px" }} className="md:p-6">
             <ErrorBoundary>
               {children}
             </ErrorBoundary>

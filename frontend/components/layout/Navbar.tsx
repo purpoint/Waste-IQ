@@ -29,24 +29,29 @@ export default function Navbar() {
 
   return (
     <header
-      className="h-16 flex items-center justify-between px-6"
       style={{
-        background: "rgba(13, 13, 26, 0.7)",
+        height: "64px",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 16px",
+        background: "rgba(13,13,26,0.95)",
         backdropFilter: "blur(20px)",
         borderBottom: "1px solid rgba(255,255,255,0.06)",
+        position: "sticky", top: 0, zIndex: 10,
+        flexShrink: 0,
       }}
     >
-      {/* Left */}
-      <div>
-        <h2 className="font-semibold text-white">{restaurant?.name}</h2>
-        <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+      {/* Left — offset on mobile for hamburger */}
+      <div style={{ paddingLeft: "44px" }} className="md:pl-0">
+        <h2 style={{ fontWeight: "600", color: "white", fontSize: "14px", margin: 0 }}>
+          {restaurant?.name}
+        </h2>
+        <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.35)", margin: 0 }}>
           AI Food Waste Platform
         </p>
       </div>
 
       {/* Right */}
-      <div className="flex items-center gap-3">
-        {/* Notifications */}
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <Button
           variant="ghost"
           size="icon"
@@ -60,13 +65,13 @@ export default function Navbar() {
           />
         </Button>
 
-        {/* Role badge */}
+        {/* Role badge - hide on mobile */}
         <div
-          className="px-3 py-1 rounded-full text-xs font-medium"
+          className="hidden sm:block"
           style={{
+            padding: "4px 12px", borderRadius: "99px", fontSize: "12px",
             background: "linear-gradient(135deg, rgba(168,85,247,0.15), rgba(244,114,182,0.1))",
-            border: "1px solid rgba(168,85,247,0.3)",
-            color: "#c084fc",
+            border: "1px solid rgba(168,85,247,0.3)", color: "#c084fc", fontWeight: "500",
           }}
         >
           {user?.role}
@@ -89,7 +94,7 @@ export default function Navbar() {
           <DropdownMenuContent
             className="w-56 border"
             style={{
-              background: "rgba(20, 15, 35, 0.95)",
+              background: "rgba(20,15,35,0.98)",
               backdropFilter: "blur(20px)",
               borderColor: "rgba(255,255,255,0.08)",
               color: "rgba(255,255,255,0.8)",
@@ -99,9 +104,7 @@ export default function Navbar() {
             <DropdownMenuLabel>
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium text-white">{user?.name}</p>
-                <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
-                  {user?.email}
-                </p>
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>{user?.email}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator style={{ background: "rgba(255,255,255,0.06)" }} />

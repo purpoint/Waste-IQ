@@ -1,18 +1,12 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion } from "framer-motion"
-import { cn } from "@/lib/utils"
+import { motion, AnimatePresence } from "framer-motion"
 import {
-  LayoutDashboard,
-  Package,
-  Trash2,
-  BarChart3,
-  Sparkles,
-  Settings,
-  Leaf,
-  ChevronRight,
+  LayoutDashboard, Package, Trash2, BarChart3,
+  Sparkles, Settings, Leaf, ChevronRight, Menu, X,
 } from "lucide-react"
 
 const navItems = [
@@ -24,77 +18,62 @@ const navItems = [
   { label: "Settings", href: "/settings", icon: Settings },
 ]
 
-export default function Sidebar() {
+function SidebarContent({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
 
   return (
-    <div
-      className="w-64 h-full flex flex-col"
-      style={{
-        background: "rgba(13, 13, 26, 0.8)",
-        backdropFilter: "blur(30px)",
-        borderRight: "1px solid rgba(255,255,255,0.06)",
-      }}
-    >
+    <div style={{
+      width: "100%", height: "100%", display: "flex", flexDirection: "column",
+      background: "rgba(13,13,26,0.95)",
+      backdropFilter: "blur(30px)",
+      borderRight: "1px solid rgba(255,255,255,0.06)",
+    }}>
       {/* Logo */}
-      <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-        <Link href="/dashboard" className="flex items-center gap-3">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, #a855f7, #f472b6)" }}
-          >
-            <Leaf className="w-5 h-5 text-white" />
+      <div style={{ padding: "24px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Link href="/dashboard" onClick={onClose} style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
+          <div style={{
+            width: "36px", height: "36px", borderRadius: "10px",
+            background: "linear-gradient(135deg, #a855f7, #f472b6)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <Leaf style={{ width: "18px", height: "18px", color: "white" }} />
           </div>
-          <span
-            className="text-xl font-bold"
-            style={{
-              background: "linear-gradient(135deg, #a855f7, #f472b6, #fb923c)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            WasteIQ
-          </span>
+          <span style={{
+            fontSize: "20px", fontWeight: "800",
+            background: "linear-gradient(135deg, #a855f7, #f472b6, #fb923c)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+          }}>WasteIQ</span>
         </Link>
+        {onClose && (
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.4)", padding: "4px" }}>
+            <X style={{ width: "20px", height: "20px" }} />
+          </button>
+        )}
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 p-4 space-y-1">
+      <nav style={{ flex: 1, padding: "16px", display: "flex", flexDirection: "column", gap: "4px" }}>
         {navItems.map((item) => {
           const isActive = pathname === item.href
           const Icon = item.icon
-
           return (
-            <Link key={item.href} href={item.href}>
+            <Link key={item.href} href={item.href} onClick={onClose} style={{ textDecoration: "none" }}>
               <motion.div
                 whileHover={{ x: 4 }}
                 transition={{ duration: 0.15 }}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group cursor-pointer"
-                style={
-                  isActive
-                    ? {
-                        background: "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(244,114,182,0.1))",
-                        border: "1px solid rgba(168,85,247,0.3)",
-                        color: "#e9d5ff",
-                      }
-                    : {
-                        color: "rgba(255,255,255,0.4)",
-                        border: "1px solid transparent",
-                      }
-                }
+                style={{
+                  display: "flex", alignItems: "center", gap: "12px",
+                  padding: "10px 12px", borderRadius: "12px",
+                  fontSize: "14px", fontWeight: "500", cursor: "pointer",
+                  background: isActive ? "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(244,114,182,0.1))" : "transparent",
+                  border: isActive ? "1px solid rgba(168,85,247,0.3)" : "1px solid transparent",
+                  color: isActive ? "#e9d5ff" : "rgba(255,255,255,0.4)",
+                  transition: "all 0.2s",
+                }}
               >
-                <Icon
-                  className="w-5 h-5 transition-colors"
-                  style={
-                    isActive
-                      ? { color: "#c084fc" }
-                      : { color: "rgba(255,255,255,0.3)" }
-                  }
-                />
+                <Icon style={{ width: "18px", height: "18px", color: isActive ? "#c084fc" : "rgba(255,255,255,0.3)", flexShrink: 0 }} />
                 <span>{item.label}</span>
-                {isActive && (
-                  <ChevronRight className="w-4 h-4 ml-auto" style={{ color: "#c084fc" }} />
-                )}
+                {isActive && <ChevronRight style={{ width: "14px", height: "14px", color: "#c084fc", marginLeft: "auto" }} />}
               </motion.div>
             </Link>
           )
@@ -102,25 +81,85 @@ export default function Sidebar() {
       </nav>
 
       {/* AI Badge */}
-      <div className="p-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-        <div
-          className="rounded-xl p-3"
-          style={{
-            background: "linear-gradient(135deg, rgba(168,85,247,0.1), rgba(244,114,182,0.05))",
-            border: "1px solid rgba(168,85,247,0.2)",
-          }}
-        >
-          <div className="flex items-center gap-2 mb-1">
-            <Sparkles className="w-4 h-4" style={{ color: "#c084fc" }} />
-            <span className="text-xs font-semibold" style={{ color: "#c084fc" }}>
-              AI Powered
-            </span>
+      <div style={{ padding: "16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{
+          borderRadius: "12px", padding: "12px",
+          background: "linear-gradient(135deg, rgba(168,85,247,0.1), rgba(244,114,182,0.05))",
+          border: "1px solid rgba(168,85,247,0.2)",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+            <Sparkles style={{ width: "14px", height: "14px", color: "#c084fc" }} />
+            <span style={{ fontSize: "11px", fontWeight: "600", color: "#c084fc" }}>AI Powered</span>
           </div>
-          <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+          <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", margin: 0, lineHeight: "1.5" }}>
             Real-time predictions and waste reduction insights
           </p>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function Sidebar() {
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <div style={{ width: "256px", flexShrink: 0, height: "100%" }} className="hidden md:block">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile hamburger button */}
+      <button
+        className="md:hidden"
+        onClick={() => setMobileOpen(true)}
+        style={{
+          position: "fixed", top: "14px", left: "16px", zIndex: 100,
+          background: "linear-gradient(135deg, #a855f7, #f472b6)",
+          border: "none", borderRadius: "10px", padding: "8px",
+          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 0 20px rgba(168,85,247,0.3)",
+        }}
+      >
+        <Menu style={{ width: "20px", height: "20px", color: "white" }} />
+      </button>
+
+      {/* Mobile overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileOpen(false)}
+              style={{
+                position: "fixed", inset: 0, zIndex: 200,
+                background: "rgba(0,0,0,0.6)",
+                backdropFilter: "blur(4px)",
+              }}
+              className="md:hidden"
+            />
+
+            {/* Slide-in sidebar */}
+            <motion.div
+              initial={{ x: -280 }}
+              animate={{ x: 0 }}
+              exit={{ x: -280 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              style={{
+                position: "fixed", top: 0, left: 0, bottom: 0,
+                width: "280px", zIndex: 300,
+              }}
+              className="md:hidden"
+            >
+              <SidebarContent onClose={() => setMobileOpen(false)} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
