@@ -17,6 +17,7 @@ interface Field {
   placeholder: string
   type?: string
   autoComplete?: string
+  fullWidth?: boolean
 }
 
 interface Toggle {
@@ -37,7 +38,7 @@ const sections: Section[] = [
   {
     icon: User,
     title: "Profile",
-    description: "Your personal information and account details",
+    description: "Your personal information",
     color: "#60a5fa",
     fields: [
       { label: "Full Name", placeholder: "Your full name", type: "text", autoComplete: "off" },
@@ -47,18 +48,18 @@ const sections: Section[] = [
   {
     icon: Store,
     title: "Restaurant",
-    description: "Your restaurant information and preferences",
+    description: "Restaurant information",
     color: "#c084fc",
     fields: [
       { label: "Restaurant Name", placeholder: "Restaurant name", type: "text", autoComplete: "off" },
       { label: "Address", placeholder: "Restaurant address", type: "text", autoComplete: "off" },
-      { label: "Phone", placeholder: "+91 00000 00000", type: "text", autoComplete: "off" },
+      { label: "Phone", placeholder: "+91 00000 00000", type: "text", autoComplete: "off", fullWidth: true },
     ],
   },
   {
     icon: Bell,
     title: "Notifications",
-    description: "Control when and how you get notified",
+    description: "Control your notifications",
     color: "#fbbf24",
     toggles: [
       { label: "Low stock alerts", description: "Get notified when items are running low" },
@@ -70,12 +71,12 @@ const sections: Section[] = [
   {
     icon: Shield,
     title: "Security",
-    description: "Manage your password and account security",
+    description: "Manage your password",
     color: "#34d399",
     fields: [
-      { label: "Current Password", placeholder: "Enter current password", type: "password", autoComplete: "new-password" },
+      { label: "Current Password", placeholder: "Enter current password", type: "password", autoComplete: "new-password", fullWidth: true },
       { label: "New Password", placeholder: "Enter new password", type: "password", autoComplete: "new-password" },
-      { label: "Confirm New Password", placeholder: "Confirm new password", type: "password", autoComplete: "new-password" },
+      { label: "Confirm Password", placeholder: "Confirm new password", type: "password", autoComplete: "new-password" },
     ],
   },
 ]
@@ -84,15 +85,15 @@ export default function SettingsPage() {
   const { user, restaurant } = useAuthStore()
 
   return (
-    <div className="space-y-6" style={{ position: "relative", zIndex: 1 }}>
+    <div className="space-y-4" style={{ position: "relative", zIndex: 1 }}>
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <Settings style={{ width: "24px", height: "24px", color: "#c084fc" }} />
-          <h1 className="text-2xl font-bold text-white">Settings</h1>
+          <Settings style={{ width: "22px", height: "22px", color: "#c084fc" }} />
+          <h1 className="text-xl font-bold text-white">Settings</h1>
         </div>
-        <p className="mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>
-          Manage your account and restaurant preferences
+        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", marginTop: "2px" }}>
+          Manage your account preferences
         </p>
       </motion.div>
 
@@ -103,52 +104,44 @@ export default function SettingsPage() {
         transition={{ delay: 0.1 }}
         style={{
           ...glassStyle,
-          padding: "24px",
+          padding: "16px",
           background: "linear-gradient(135deg, rgba(168,85,247,0.1), rgba(244,114,182,0.05))",
           border: "1px solid rgba(168,85,247,0.2)",
-          display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap",
         }}
       >
-        <div style={{
-          width: "64px", height: "64px", borderRadius: "20px", flexShrink: 0,
-          background: "linear-gradient(135deg, #a855f7, #f472b6)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: "24px", fontWeight: "700", color: "white",
-          boxShadow: "0 0 30px rgba(168,85,247,0.3)",
-        }}>
-          {user?.name?.charAt(0).toUpperCase()}
-        </div>
-        <div style={{ flex: 1 }}>
-          <p style={{ fontSize: "18px", fontWeight: "700", color: "white", margin: 0 }}>{user?.name}</p>
-          <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)", margin: "4px 0" }}>{user?.email}</p>
-          <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap" }}>
-            <span style={{
-              background: "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(244,114,182,0.1))",
-              border: "1px solid rgba(168,85,247,0.3)",
-              color: "#c084fc", fontSize: "11px", padding: "3px 10px",
-              borderRadius: "99px", fontWeight: "500",
-            }}>
-              {user?.role}
-            </span>
-            <span style={{
-              background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)",
-              color: "#34d399", fontSize: "11px", padding: "3px 10px",
-              borderRadius: "99px", fontWeight: "500",
-            }}>
-              {restaurant?.name}
-            </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
+          <div style={{
+            width: "56px", height: "56px", borderRadius: "16px", flexShrink: 0,
+            background: "linear-gradient(135deg, #a855f7, #f472b6)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: "22px", fontWeight: "700", color: "white",
+          }}>
+            {user?.name?.charAt(0).toUpperCase()}
           </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: "16px", fontWeight: "700", color: "white", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.name}</p>
+            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", margin: "3px 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.email}</p>
+            <div style={{ display: "flex", gap: "6px", marginTop: "6px", flexWrap: "wrap" }}>
+              <span style={{ background: "rgba(168,85,247,0.2)", border: "1px solid rgba(168,85,247,0.3)", color: "#c084fc", fontSize: "10px", padding: "2px 8px", borderRadius: "99px" }}>
+                {user?.role}
+              </span>
+              <span style={{ background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)", color: "#34d399", fontSize: "10px", padding: "2px 8px", borderRadius: "99px" }}>
+                {restaurant?.name}
+              </span>
+            </div>
+          </div>
+          <button style={{
+            background: "linear-gradient(135deg, #a855f7, #f472b6)",
+            border: "none", color: "white", padding: "8px 16px",
+            borderRadius: "10px", cursor: "pointer", fontSize: "12px", fontWeight: "600",
+            whiteSpace: "nowrap",
+          }}>
+            Edit Profile
+          </button>
         </div>
-        <button style={{
-          background: "linear-gradient(135deg, #a855f7, #f472b6)",
-          border: "none", color: "white", padding: "10px 20px",
-          borderRadius: "10px", cursor: "pointer", fontSize: "13px", fontWeight: "600",
-        }}>
-          Edit Profile
-        </button>
       </motion.div>
 
-      {/* Settings Sections */}
+      {/* Sections */}
       {sections.map((section, si) => {
         const Icon = section.icon
         return (
@@ -157,40 +150,30 @@ export default function SettingsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + si * 0.1 }}
-            style={{ ...glassStyle, padding: "24px" }}
+            style={{ ...glassStyle, padding: "16px" }}
           >
             {/* Section header */}
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
               <div style={{
-                width: "36px", height: "36px", borderRadius: "10px",
+                width: "32px", height: "32px", borderRadius: "9px",
                 background: `${section.color}15`,
                 border: `1px solid ${section.color}30`,
-                display: "flex", alignItems: "center", justifyContent: "center",
+                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
               }}>
-                <Icon style={{ width: "18px", height: "18px", color: section.color }} />
+                <Icon style={{ width: "16px", height: "16px", color: section.color }} />
               </div>
               <div>
-                <p style={{ fontSize: "15px", fontWeight: "600", color: "white", margin: 0 }}>
-                  {section.title}
-                </p>
-                <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: 0 }}>
-                  {section.description}
-                </p>
+                <p style={{ fontSize: "14px", fontWeight: "600", color: "white", margin: 0 }}>{section.title}</p>
+                <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", margin: 0 }}>{section.description}</p>
               </div>
             </div>
 
             {/* Fields */}
             {section.fields && (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "12px", marginBottom: "14px" }}>
                 {section.fields.map((field, fi) => (
-                  <div
-                    key={fi}
-                    style={{ gridColumn: section.fields!.length % 2 !== 0 && fi === section.fields!.length - 1 ? "1 / -1" : "auto" }}
-                  >
-                    <label style={{
-                      fontSize: "12px", color: "rgba(255,255,255,0.5)",
-                      display: "block", marginBottom: "8px",
-                    }}>
+                  <div key={fi} style={{ gridColumn: field.fullWidth ? "1 / -1" : "auto" }}>
+                    <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", display: "block", marginBottom: "6px" }}>
                       {field.label}
                     </label>
                     <input
@@ -198,11 +181,11 @@ export default function SettingsPage() {
                       placeholder={field.placeholder}
                       autoComplete={field.autoComplete || "off"}
                       style={{
-                        width: "100%", padding: "10px 14px",
+                        width: "100%", padding: "9px 12px",
                         background: "rgba(255,255,255,0.05)",
                         border: "1px solid rgba(255,255,255,0.1)",
                         borderRadius: "10px", color: "white",
-                        fontSize: "14px", outline: "none",
+                        fontSize: "13px", outline: "none",
                         boxSizing: "border-box",
                       }}
                     />
@@ -213,31 +196,22 @@ export default function SettingsPage() {
 
             {/* Toggles */}
             {section.toggles && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "14px", marginBottom: "14px" }}>
                 {section.toggles.map((toggle, ti) => (
-                  <div key={ti} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <div>
-                      <p style={{ fontSize: "14px", color: "white", margin: 0, fontWeight: "500" }}>
-                        {toggle.label}
-                      </p>
-                      <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: "2px 0 0" }}>
-                        {toggle.description}
-                      </p>
+                  <div key={ti} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: "13px", color: "white", margin: 0, fontWeight: "500" }}>{toggle.label}</p>
+                      <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", margin: "2px 0 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{toggle.description}</p>
                     </div>
                     <div style={{
-                      width: "44px", height: "24px", borderRadius: "99px",
-                      background: ti % 2 === 0
-                        ? "linear-gradient(135deg, #a855f7, #f472b6)"
-                        : "rgba(255,255,255,0.1)",
+                      width: "42px", height: "23px", borderRadius: "99px", flexShrink: 0,
+                      background: ti % 2 === 0 ? "linear-gradient(135deg, #a855f7, #f472b6)" : "rgba(255,255,255,0.1)",
                       cursor: "pointer", position: "relative",
-                      transition: "all 0.2s", flexShrink: 0,
                     }}>
                       <div style={{
-                        width: "18px", height: "18px", borderRadius: "50%",
+                        width: "17px", height: "17px", borderRadius: "50%",
                         background: "white", position: "absolute",
-                        top: "3px",
-                        left: ti % 2 === 0 ? "23px" : "3px",
-                        transition: "all 0.2s",
+                        top: "3px", left: ti % 2 === 0 ? "22px" : "3px",
                         boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
                       }} />
                     </div>
@@ -247,13 +221,11 @@ export default function SettingsPage() {
             )}
 
             {/* Save button */}
-            <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end" }}>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <button style={{
                 background: "linear-gradient(135deg, #a855f7, #f472b6)",
-                border: "none", color: "white", padding: "10px 24px",
-                borderRadius: "10px", cursor: "pointer",
-                fontSize: "13px", fontWeight: "600",
-                boxShadow: "0 0 20px rgba(168,85,247,0.2)",
+                border: "none", color: "white", padding: "9px 20px",
+                borderRadius: "10px", cursor: "pointer", fontSize: "12px", fontWeight: "600",
               }}>
                 Save {section.title}
               </button>

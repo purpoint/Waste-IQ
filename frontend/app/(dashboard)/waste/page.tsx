@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Trash2, Plus, Search, Loader2, TrendingDown, AlertTriangle, DollarSign } from "lucide-react"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts"
 import { getWasteLogsApi, addWasteLogApi, deleteWasteLogApi, WasteLog } from "@/lib/waste.api"
@@ -67,7 +67,7 @@ export default function WastePage() {
       setOpen(false)
       setForm({ itemName: "", quantity: "", unit: "kg", reason: "Spoilage", cost: "" })
     } catch (error) {
-      console.error("Failed to add waste log:", error)
+      console.error("Failed to add:", error)
     } finally {
       setSaving(false)
     }
@@ -97,32 +97,37 @@ export default function WastePage() {
   )
 
   return (
-    <div className="space-y-6" style={{ position: "relative", zIndex: 1 }}>
+    <div className="space-y-4" style={{ position: "relative", zIndex: 1 }}>
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}
+      >
         <div>
-          <h1 className="text-2xl font-bold text-white">Waste Tracker</h1>
-          <p className="mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>Log and analyze food waste in real time</p>
+          <h1 className="text-xl font-bold text-white">Waste Tracker</h1>
+          <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Log and analyze food waste</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <button style={{
               background: "linear-gradient(135deg, #a855f7, #f472b6)",
-              border: "none", color: "white", padding: "10px 20px",
-              borderRadius: "12px", cursor: "pointer", fontSize: "14px",
+              border: "none", color: "white", padding: "9px 14px",
+              borderRadius: "12px", cursor: "pointer", fontSize: "13px",
               fontWeight: "600", display: "flex", alignItems: "center", gap: "6px",
             }}>
-              <Plus style={{ width: "16px", height: "16px" }} /> Log Waste
+              <Plus style={{ width: "15px", height: "15px" }} /> Log Waste
             </button>
           </DialogTrigger>
           <DialogContent style={{
             background: "rgba(20,15,35,0.98)", backdropFilter: "blur(30px)",
             border: "1px solid rgba(168,85,247,0.2)", borderRadius: "20px", color: "white",
+            maxHeight: "90vh", overflowY: "auto",
           }}>
             <DialogHeader>
               <DialogTitle style={{ color: "white" }}>Log Food Waste</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleAdd} className="space-y-4 mt-2">
+            <form onSubmit={handleAdd} className="space-y-3 mt-2">
               <div className="space-y-1">
                 <Label style={{ color: "rgba(255,255,255,0.6)", fontSize: "12px" }}>Item Name</Label>
                 <Input placeholder="e.g. Tomatoes" value={form.itemName}
@@ -170,114 +175,109 @@ export default function WastePage() {
       </motion.div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
         {[
           { label: "Total Loss", value: `₹${totalCost.toLocaleString()}`, icon: DollarSign, gradient: "linear-gradient(135deg, rgba(248,113,113,0.15), rgba(251,146,60,0.05))", border: "rgba(248,113,113,0.2)", color: "#f87171" },
-          { label: "Today's Waste", value: `${todayLogs.length} logs`, icon: AlertTriangle, gradient: "linear-gradient(135deg, rgba(251,191,36,0.15), rgba(251,146,60,0.05))", border: "rgba(251,191,36,0.2)", color: "#fbbf24" },
-          { label: "Total Logs", value: wasteLogs.length, icon: TrendingDown, gradient: "linear-gradient(135deg, rgba(168,85,247,0.15), rgba(244,114,182,0.05))", border: "rgba(168,85,247,0.2)", color: "#c084fc" },
+          { label: "Today", value: `${todayLogs.length} logs`, icon: AlertTriangle, gradient: "linear-gradient(135deg, rgba(251,191,36,0.15), rgba(251,146,60,0.05))", border: "rgba(251,191,36,0.2)", color: "#fbbf24" },
+          { label: "Total", value: `${wasteLogs.length} logs`, icon: TrendingDown, gradient: "linear-gradient(135deg, rgba(168,85,247,0.15), rgba(244,114,182,0.05))", border: "rgba(168,85,247,0.2)", color: "#c084fc" },
         ].map((stat, i) => {
           const Icon = stat.icon
           return (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-              style={{ background: stat.gradient, border: `1px solid ${stat.border}`, borderRadius: "16px", padding: "16px", display: "flex", alignItems: "center", gap: "12px" }}>
-              <div style={{ padding: "10px", background: "rgba(255,255,255,0.06)", borderRadius: "12px" }}>
-                <Icon style={{ width: "20px", height: "20px", color: stat.color }} />
-              </div>
-              <div>
-                <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)" }}>{stat.label}</p>
-                <p style={{ fontSize: "20px", fontWeight: "700", color: "white" }}>{stat.value}</p>
+              style={{ background: stat.gradient, border: `1px solid ${stat.border}`, borderRadius: "14px", padding: "12px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div style={{ padding: "8px", background: "rgba(255,255,255,0.06)", borderRadius: "10px", flexShrink: 0 }}>
+                  <Icon style={{ width: "16px", height: "16px", color: stat.color }} />
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", margin: 0 }}>{stat.label}</p>
+                  <p style={{ fontSize: "15px", fontWeight: "700", color: "white", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{stat.value}</p>
+                </div>
               </div>
             </motion.div>
           )
         })}
       </div>
 
-      {/* Chart + Table */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        {/* Pie Chart */}
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} style={{ ...glassStyle, padding: "20px" }}>
-          <p className="font-semibold text-white mb-4">Waste by Reason</p>
-          {reasonData.length === 0 ? (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "200px", color: "rgba(255,255,255,0.3)", fontSize: "14px" }}>
-              No data yet
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height={240}>
-              <PieChart>
-                <Pie data={reasonData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={3} dataKey="value">
-                  {reasonData.map((_, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ backgroundColor: "rgba(15,10,30,0.95)", border: "1px solid rgba(168,85,247,0.3)", borderRadius: "12px", color: "#fff" }} formatter={(value) => [`₹${value}`, "Loss"]} />
-                <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "11px" }}>{value}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </motion.div>
-
-        {/* Table */}
-        <div className="xl:col-span-2 space-y-3">
-          <div style={{ position: "relative" }}>
-            <Search style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", width: "16px", height: "16px", color: "rgba(255,255,255,0.3)" }} />
-            <input placeholder="Search waste logs..." value={search} onChange={(e) => setSearch(e.target.value)}
-              style={{ width: "100%", padding: "10px 12px 10px 38px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", color: "white", fontSize: "14px", outline: "none" }} />
+      {/* Pie Chart */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+        style={{ ...glassStyle, padding: "16px" }}>
+        <p className="font-semibold text-white mb-3" style={{ fontSize: "14px" }}>Waste by Reason</p>
+        {reasonData.length === 0 ? (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "160px", color: "rgba(255,255,255,0.3)", fontSize: "14px" }}>
+            No data yet
           </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie data={reasonData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={3} dataKey="value">
+                {reasonData.map((_, index) => (
+                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip contentStyle={{ backgroundColor: "rgba(15,10,30,0.95)", border: "1px solid rgba(168,85,247,0.3)", borderRadius: "10px", color: "#fff", fontSize: "12px" }}
+                formatter={(value) => [`₹${value}`, "Loss"]} />
+              <Legend iconType="circle" iconSize={7}
+                formatter={(value) => <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "10px" }}>{value}</span>} />
+            </PieChart>
+          </ResponsiveContainer>
+        )}
+      </motion.div>
 
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} style={glassStyle}>
-            {loading ? (
-             <SkeletonTable />
-            ) : filtered.length === 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "60px", color: "rgba(255,255,255,0.3)" }}>
-                <Trash2 style={{ width: "40px", height: "40px", marginBottom: "12px", opacity: 0.3 }} />
-                <p style={{ fontSize: "14px" }}>No waste logs yet</p>
-                <p style={{ fontSize: "12px", marginTop: "4px" }}>Click "Log Waste" to start tracking</p>
-              </div>
-            ) : (
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                      {["Item", "Quantity", "Reason", "Loss", "Date", ""].map((h, i) => (
-                        <th key={i} style={{ textAlign: "left", fontSize: "11px", color: "rgba(255,255,255,0.3)", fontWeight: "500", padding: "12px 16px", textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map((log, i) => (
-                      <motion.tr key={log.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                        style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                      >
-                        <td style={{ padding: "14px 16px", color: "white", fontSize: "14px", fontWeight: "500" }}>{log.itemName}</td>
-                        <td style={{ padding: "14px 16px", color: "rgba(255,255,255,0.6)", fontSize: "14px" }}>{log.quantity} {log.unit}</td>
-                        <td style={{ padding: "14px 16px" }}>
-                          <span style={{ background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.2)", color: "#f87171", fontSize: "11px", padding: "3px 8px", borderRadius: "99px" }}>
-                            {log.reason}
-                          </span>
-                        </td>
-                        <td style={{ padding: "14px 16px", color: "#f87171", fontSize: "14px", fontWeight: "600" }}>₹{log.cost}</td>
-                        <td style={{ padding: "14px 16px", color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>
-                          {new Date(log.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                        </td>
-                        <td style={{ padding: "14px 16px" }}>
-                          <button onClick={() => handleDelete(log.id)}
-                            style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", padding: "6px", borderRadius: "8px" }}
-                            onMouseEnter={(e) => { e.currentTarget.style.color = "#f87171"; e.currentTarget.style.background = "rgba(248,113,113,0.1)" }}
-                            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.3)"; e.currentTarget.style.background = "transparent" }}>
-                            <Trash2 style={{ width: "16px", height: "16px" }} />
-                          </button>
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </motion.div>
-        </div>
+      {/* Search + Table */}
+      <div style={{ position: "relative" }}>
+        <Search style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", width: "16px", height: "16px", color: "rgba(255,255,255,0.3)" }} />
+        <input placeholder="Search waste logs..." value={search} onChange={(e) => setSearch(e.target.value)}
+          style={{ width: "100%", padding: "10px 12px 10px 38px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", color: "white", fontSize: "14px", outline: "none", boxSizing: "border-box" as const }} />
       </div>
+
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={glassStyle}>
+        {loading ? (
+          <SkeletonTable />
+        ) : filtered.length === 0 ? (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "48px 20px", color: "rgba(255,255,255,0.3)" }}>
+            <Trash2 style={{ width: "36px", height: "36px", marginBottom: "12px", opacity: 0.3 }} />
+            <p style={{ fontSize: "14px", margin: 0 }}>No waste logs yet</p>
+          </div>
+        ) : (
+          <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "500px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                  {["Item", "Qty", "Reason", "Loss", "Date", ""].map((h, i) => (
+                    <th key={i} style={{ textAlign: "left", fontSize: "11px", color: "rgba(255,255,255,0.3)", fontWeight: "500", padding: "10px 12px", textTransform: "uppercase", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((log, i) => (
+                  <tr key={log.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                    <td style={{ padding: "12px", color: "white", fontSize: "13px", fontWeight: "500", whiteSpace: "nowrap" }}>{log.itemName}</td>
+                    <td style={{ padding: "12px", color: "rgba(255,255,255,0.6)", fontSize: "13px", whiteSpace: "nowrap" }}>{log.quantity} {log.unit}</td>
+                    <td style={{ padding: "12px" }}>
+                      <span style={{ background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.2)", color: "#f87171", fontSize: "11px", padding: "3px 7px", borderRadius: "99px", whiteSpace: "nowrap" }}>
+                        {log.reason}
+                      </span>
+                    </td>
+                    <td style={{ padding: "12px", color: "#f87171", fontSize: "13px", fontWeight: "600", whiteSpace: "nowrap" }}>₹{log.cost}</td>
+                    <td style={{ padding: "12px", color: "rgba(255,255,255,0.4)", fontSize: "12px", whiteSpace: "nowrap" }}>
+                      {new Date(log.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                    </td>
+                    <td style={{ padding: "12px" }}>
+                      <button onClick={() => handleDelete(log.id)}
+                        style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", padding: "4px", borderRadius: "6px" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.color = "#f87171"; e.currentTarget.style.background = "rgba(248,113,113,0.1)" }}
+                        onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.3)"; e.currentTarget.style.background = "transparent" }}>
+                        <Trash2 style={{ width: "14px", height: "14px" }} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </motion.div>
     </div>
   )
 }
