@@ -11,8 +11,28 @@ const glassStyle = {
   border: "1px solid rgba(255,255,255,0.08)",
   borderRadius: "16px",
 }
+interface Field {
+  label: string
+  placeholder: string
+  type: string
+  autoComplete: string
+}
 
-const sections = [
+interface Toggle {
+  label: string
+  description: string
+}
+
+interface Section {
+  icon: any
+  title: string
+  description: string
+  color: string
+  fields?: Field[]
+  toggles?: Toggle[]
+}
+
+const sections: Section[] = [
   {
     icon: User,
     title: "Profile",
