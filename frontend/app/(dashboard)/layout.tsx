@@ -26,7 +26,6 @@ export default function DashboardLayout({
     }
   }, [hydrated, isAuthenticated, router])
 
-  // Don't render anything until Zustand has loaded from localStorage
   if (!hydrated) {
     return (
       <div style={{
@@ -39,26 +38,36 @@ export default function DashboardLayout({
         <div style={{
           width: "40px", height: "40px", borderRadius: "12px",
           background: "linear-gradient(135deg, #a855f7, #f472b6)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          animation: "pulse 1.5s infinite",
-        }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-            <path d="M12 2L8 6H4v4L2 12l2 2v4h4l4 4 4-4h4v-4l2-2-2-2V6h-4L12 2z"/>
-          </svg>
-        </div>
+        }} />
       </div>
     )
   }
 
   if (!isAuthenticated) return null
 
-return (
+  return (
     <ErrorBoundary>
-      <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "#0d0d1a" }}>
+      <div style={{
+        display: "flex",
+        height: "100vh",
+        overflow: "hidden",
+        background: "#0d0d1a",
+      }}>
         <Sidebar />
-        <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          overflow: "hidden",
+          minWidth: 0,
+        }}>
           <Navbar />
-          <main style={{ flex: 1, overflowY: "auto", padding: "16px" }} className="md:p-6">
+          <main style={{
+            flex: 1,
+            overflowY: "auto",
+            overflowX: "hidden",
+            padding: "16px",
+          }}>
             <ErrorBoundary>
               {children}
             </ErrorBoundary>
