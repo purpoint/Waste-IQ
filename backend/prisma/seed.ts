@@ -6,14 +6,20 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL! })
+const connectionString = process.env.DATABASE_URL!
+
+const pool = new pg.Pool({
+  connectionString,
+  ssl: process.env.NODE_ENV === "production" || connectionString.includes("render.com")
+    ? { rejectUnauthorized: false }
+    : false,
+})
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log("🌱 Seeding database...")
 
-  // Create restaurant
   const hashedPassword = await bcrypt.hash("demo123456", 12)
 
   const restaurant = await prisma.restaurant.upsert({
@@ -40,7 +46,6 @@ async function main() {
 
   console.log("✅ Restaurant created:", restaurant.name)
 
-  // Create inventory items
   const inventoryItems = [
     { name: "Tomatoes", quantity: 15, unit: "kg", costPrice: 40, category: "Vegetables", supplier: "Fresh Farms Co.", storageType: "Refrigerated", expiryDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000) },
     { name: "Onions", quantity: 20, unit: "kg", costPrice: 25, category: "Vegetables", supplier: "Fresh Farms Co.", storageType: "Dry Storage", expiryDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) },
@@ -66,7 +71,6 @@ async function main() {
   }
   console.log(`✅ ${inventoryItems.length} inventory items created`)
 
-  // Create waste logs
   const wasteLogs = [
     { itemName: "Tomatoes", quantity: 3, unit: "kg", reason: "Spoilage", cost: 120, daysAgo: 0 },
     { itemName: "Milk", quantity: 5, unit: "L", reason: "Expired", cost: 275, daysAgo: 1 },
@@ -99,7 +103,6 @@ async function main() {
   }
   console.log(`✅ ${wasteLogs.length} waste logs created`)
 
-  // Create sales data
   const salesData = []
   for (let i = 29; i >= 0; i--) {
     const date = new Date()
@@ -116,7 +119,6 @@ async function main() {
   await prisma.salesData.createMany({ data: salesData })
   console.log(`✅ ${salesData.length} days of sales data created`)
 
-  // Create alerts
   const alerts = [
     { type: "EXPIRY_WARNING" as const, message: "Paneer expires in 3 days — use or discard soon", severity: "high" },
     { type: "EXPIRY_WARNING" as const, message: "Chicken expires in 2 days — prioritize usage", severity: "critical" },
