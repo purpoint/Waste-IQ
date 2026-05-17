@@ -13,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Bell, LogOut, Settings, User } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 
 export default function Navbar() {
   const { user, restaurant, logout } = useAuthStore()
@@ -29,73 +28,96 @@ export default function Navbar() {
     : "U"
 
   return (
-    <header className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6">
-      {/* Left - Restaurant name */}
+    <header
+      className="h-16 flex items-center justify-between px-6"
+      style={{
+        background: "rgba(13, 13, 26, 0.7)",
+        backdropFilter: "blur(20px)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+      }}
+    >
+      {/* Left */}
       <div>
-        <h2 className="text-white font-semibold">{restaurant?.name}</h2>
-        <p className="text-slate-400 text-xs">AI Food Waste Platform</p>
+        <h2 className="font-semibold text-white">{restaurant?.name}</h2>
+        <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+          AI Food Waste Platform
+        </p>
       </div>
 
-      {/* Right - Actions */}
+      {/* Right */}
       <div className="flex items-center gap-3">
         {/* Notifications */}
         <Button
           variant="ghost"
           size="icon"
-          className="relative text-slate-400 hover:text-white hover:bg-slate-800"
+          className="relative"
+          style={{ color: "rgba(255,255,255,0.4)" }}
         >
           <Bell className="w-5 h-5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full" />
+          <span
+            className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
+            style={{ background: "linear-gradient(135deg, #a855f7, #f472b6)" }}
+          />
         </Button>
 
         {/* Role badge */}
-        <Badge
-          variant="outline"
-          className="border-emerald-500/30 text-emerald-400 bg-emerald-500/10 text-xs"
+        <div
+          className="px-3 py-1 rounded-full text-xs font-medium"
+          style={{
+            background: "linear-gradient(135deg, rgba(168,85,247,0.15), rgba(244,114,182,0.1))",
+            border: "1px solid rgba(168,85,247,0.3)",
+            color: "#c084fc",
+          }}
         >
           {user?.role}
-        </Badge>
+        </div>
 
         {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="relative h-9 w-9 rounded-full p-0 hover:ring-2 hover:ring-emerald-500/30"
-            >
+            <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0">
               <Avatar className="h-9 w-9">
-                <AvatarFallback className="bg-emerald-600 text-white text-sm font-semibold">
+                <AvatarFallback
+                  className="text-sm font-semibold text-white"
+                  style={{ background: "linear-gradient(135deg, #a855f7, #f472b6)" }}
+                >
                   {initials}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-56 bg-slate-900 border-slate-700 text-slate-300"
+            className="w-56 border"
+            style={{
+              background: "rgba(20, 15, 35, 0.95)",
+              backdropFilter: "blur(20px)",
+              borderColor: "rgba(255,255,255,0.08)",
+              color: "rgba(255,255,255,0.8)",
+            }}
             align="end"
           >
-            <DropdownMenuLabel className="text-white">
+            <DropdownMenuLabel>
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium">{user?.name}</p>
-                <p className="text-xs text-slate-400">{user?.email}</p>
+                <p className="text-sm font-medium text-white">{user?.name}</p>
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+                  {user?.email}
+                </p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-slate-700" />
-            <DropdownMenuItem className="hover:bg-slate-800 cursor-pointer">
-              <User className="w-4 h-4 mr-2" />
-              Profile
+            <DropdownMenuSeparator style={{ background: "rgba(255,255,255,0.06)" }} />
+            <DropdownMenuItem className="cursor-pointer" style={{ color: "rgba(255,255,255,0.7)" }}>
+              <User className="w-4 h-4 mr-2" /> Profile
             </DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-slate-800 cursor-pointer">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
+            <DropdownMenuItem className="cursor-pointer" style={{ color: "rgba(255,255,255,0.7)" }}>
+              <Settings className="w-4 h-4 mr-2" /> Settings
             </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-slate-700" />
+            <DropdownMenuSeparator style={{ background: "rgba(255,255,255,0.06)" }} />
             <DropdownMenuItem
-              className="hover:bg-red-500/10 text-red-400 cursor-pointer"
+              className="cursor-pointer"
+              style={{ color: "#f87171" }}
               onClick={handleLogout}
             >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign out
+              <LogOut className="w-4 h-4 mr-2" /> Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

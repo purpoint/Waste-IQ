@@ -16,54 +16,49 @@ import {
 } from "lucide-react"
 
 const navItems = [
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "Inventory",
-    href: "/inventory",
-    icon: Package,
-  },
-  {
-    label: "Waste Tracker",
-    href: "/waste",
-    icon: Trash2,
-  },
-  {
-    label: "Analytics",
-    href: "/analytics",
-    icon: BarChart3,
-  },
-  {
-    label: "AI Insights",
-    href: "/ai-insights",
-    icon: Sparkles,
-  },
-  {
-    label: "Settings",
-    href: "/settings",
-    icon: Settings,
-  },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Inventory", href: "/inventory", icon: Package },
+  { label: "Waste Tracker", href: "/waste", icon: Trash2 },
+  { label: "Analytics", href: "/analytics", icon: BarChart3 },
+  { label: "AI Insights", href: "/ai-insights", icon: Sparkles },
+  { label: "Settings", href: "/settings", icon: Settings },
 ]
 
 export default function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="w-64 h-full bg-slate-900 border-r border-slate-800 flex flex-col">
+    <div
+      className="w-64 h-full flex flex-col"
+      style={{
+        background: "rgba(13, 13, 26, 0.8)",
+        backdropFilter: "blur(30px)",
+        borderRight: "1px solid rgba(255,255,255,0.06)",
+      }}
+    >
       {/* Logo */}
-      <div className="p-6 border-b border-slate-800">
+      <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <Link href="/dashboard" className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-emerald-500 rounded-lg flex items-center justify-center">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ background: "linear-gradient(135deg, #a855f7, #f472b6)" }}
+          >
             <Leaf className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-bold text-white">WasteIQ</span>
+          <span
+            className="text-xl font-bold"
+            style={{
+              background: "linear-gradient(135deg, #a855f7, #f472b6, #fb923c)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            WasteIQ
+          </span>
         </Link>
       </div>
 
-      {/* Nav Items */}
+      {/* Nav */}
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
           const isActive = pathname === item.href
@@ -74,22 +69,31 @@ export default function Sidebar() {
               <motion.div
                 whileHover={{ x: 4 }}
                 transition={{ duration: 0.15 }}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group cursor-pointer",
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group cursor-pointer"
+                style={
                   isActive
-                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                    : "text-slate-400 hover:text-white hover:bg-slate-800"
-                )}
+                    ? {
+                        background: "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(244,114,182,0.1))",
+                        border: "1px solid rgba(168,85,247,0.3)",
+                        color: "#e9d5ff",
+                      }
+                    : {
+                        color: "rgba(255,255,255,0.4)",
+                        border: "1px solid transparent",
+                      }
+                }
               >
                 <Icon
-                  className={cn(
-                    "w-5 h-5 transition-colors",
-                    isActive ? "text-emerald-400" : "text-slate-500 group-hover:text-white"
-                  )}
+                  className="w-5 h-5 transition-colors"
+                  style={
+                    isActive
+                      ? { color: "#c084fc" }
+                      : { color: "rgba(255,255,255,0.3)" }
+                  }
                 />
                 <span>{item.label}</span>
                 {isActive && (
-                  <ChevronRight className="w-4 h-4 text-emerald-400 ml-auto" />
+                  <ChevronRight className="w-4 h-4 ml-auto" style={{ color: "#c084fc" }} />
                 )}
               </motion.div>
             </Link>
@@ -97,14 +101,22 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Bottom - AI Badge */}
-      <div className="p-4 border-t border-slate-800">
-        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
+      {/* AI Badge */}
+      <div className="p-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div
+          className="rounded-xl p-3"
+          style={{
+            background: "linear-gradient(135deg, rgba(168,85,247,0.1), rgba(244,114,182,0.05))",
+            border: "1px solid rgba(168,85,247,0.2)",
+          }}
+        >
           <div className="flex items-center gap-2 mb-1">
-            <Sparkles className="w-4 h-4 text-emerald-400" />
-            <span className="text-emerald-400 text-xs font-semibold">AI Powered</span>
+            <Sparkles className="w-4 h-4" style={{ color: "#c084fc" }} />
+            <span className="text-xs font-semibold" style={{ color: "#c084fc" }}>
+              AI Powered
+            </span>
           </div>
-          <p className="text-slate-400 text-xs">
+          <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
             Real-time predictions and waste reduction insights
           </p>
         </div>

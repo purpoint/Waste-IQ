@@ -1,39 +1,18 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useAuthStore } from "@/store/auth.store"
 import { motion } from "framer-motion"
 import {
-  TrendingDown,
-  Package,
-  AlertTriangle,
-  DollarSign,
-  Sparkles,
-  ArrowUpRight,
-  ArrowDownRight,
+  TrendingDown, Package, AlertTriangle,
+  DollarSign, Sparkles, ArrowUpRight, ArrowDownRight,
 } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
+  AreaChart, Area, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer, BarChart, Bar,
 } from "recharts"
-
-const wasteData = [
-  { day: "Mon", waste: 12, predicted: 15 },
-  { day: "Tue", waste: 8, predicted: 10 },
-  { day: "Wed", waste: 15, predicted: 12 },
-  { day: "Thu", waste: 6, predicted: 8 },
-  { day: "Fri", waste: 18, predicted: 16 },
-  { day: "Sat", waste: 22, predicted: 20 },
-  { day: "Sun", waste: 10, predicted: 12 },
-]
+import { getDashboardStatsApi } from "@/lib/analytics.api"
+import { SkeletonDashboard } from "@/components/ui/skeleton-loader"
 
 const demandData = [
   { time: "8am", orders: 24 },
@@ -45,241 +24,224 @@ const demandData = [
   { time: "8pm", orders: 61 },
 ]
 
-const stats = [
-  {
-    title: "Food Waste This Week",
-    value: "₹4,280",
-    change: "-12%",
-    trend: "down",
-    icon: TrendingDown,
-    color: "emerald",
-    description: "vs last week",
-  },
-  {
-    title: "Inventory Items",
-    value: "142",
-    change: "+3",
-    trend: "up",
-    icon: Package,
-    color: "blue",
-    description: "items tracked",
-  },
-  {
-    title: "Expiry Alerts",
-    value: "7",
-    change: "+2",
-    trend: "up",
-    icon: AlertTriangle,
-    color: "amber",
-    description: "items expiring soon",
-  },
-  {
-    title: "Revenue Saved",
-    value: "₹18,500",
-    change: "+8%",
-    trend: "up",
-    icon: DollarSign,
-    color: "emerald",
-    description: "this month",
-  },
-]
-
 const aiRecommendations = [
-  {
-    type: "warning",
-    message: "Reduce tomato purchase by 15% next week — demand predicted to drop due to festival season.",
-  },
-  {
-    type: "success",
-    message: "Increase paneer stock by 20% for this weekend — high demand predicted.",
-  },
-  {
-    type: "info",
-    message: "3 inventory items expire within 2 days. Consider running a special menu today.",
-  },
+  { message: "Reduce tomato purchase by 15% next week — demand predicted to drop due to festival season.", gradient: "linear-gradient(135deg, rgba(251,191,36,0.08), rgba(251,146,60,0.04))", border: "rgba(251,191,36,0.2)", color: "#fbbf24" },
+  { message: "Increase paneer stock by 20% for this weekend — high demand predicted.", gradient: "linear-gradient(135deg, rgba(52,211,153,0.08), rgba(96,165,250,0.04))", border: "rgba(52,211,153,0.2)", color: "#34d399" },
+  { message: "3 inventory items expire within 2 days. Consider running a special menu today.", gradient: "linear-gradient(135deg, rgba(168,85,247,0.08), rgba(244,114,182,0.04))", border: "rgba(168,85,247,0.2)", color: "#c084fc" },
 ]
 
-const colorMap: Record<string, string> = {
-  emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-  blue: "text-blue-400 bg-blue-500/10 border-blue-500/20",
-  amber: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+const glassStyle = {
+  background: "rgba(255,255,255,0.04)",
+  backdropFilter: "blur(20px)",
+  WebkitBackdropFilter: "blur(20px)",
+  border: "1px solid rgba(255,255,255,0.08)",
+  borderRadius: "16px",
+}
+
+const tooltipStyle = {
+  contentStyle: {
+    backgroundColor: "rgba(15,10,30,0.95)",
+    border: "1px solid rgba(168,85,247,0.3)",
+    borderRadius: "12px",
+    color: "#f0eeff",
+  },
 }
 
 export default function DashboardPage() {
   const { user } = useAuthStore()
+  const [stats, setStats] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchStats()
+  }, [])
+
+  const fetchStats = async () => {
+    try {
+      const response = await getDashboardStatsApi()
+      setStats(response.data)
+    } catch (error) {
+      console.error("Failed to fetch dashboard stats:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const statCards = stats ? [
+    {
+      title: "Food Waste This Week",
+      value: `₹${stats.thisWeekWasteCost.toLocaleString()}`,
+      change: stats.wasteChange,
+      trend: stats.wasteTrend,
+      icon: TrendingDown,
+      gradient: "linear-gradient(135deg, rgba(248,113,113,0.15), rgba(251,146,60,0.05))",
+      border: "rgba(248,113,113,0.2)",
+      iconColor: "#f87171",
+      changeColor: stats.wasteTrend === "down" ? "#34d399" : "#f87171",
+      description: "vs last week",
+    },
+    {
+      title: "Inventory Items",
+      value: stats.totalInventoryItems,
+      change: "Live",
+      trend: "up",
+      icon: Package,
+      gradient: "linear-gradient(135deg, rgba(96,165,250,0.15), rgba(168,85,247,0.05))",
+      border: "rgba(96,165,250,0.2)",
+      iconColor: "#60a5fa",
+      changeColor: "#60a5fa",
+      description: "items tracked",
+    },
+    {
+      title: "Expiry Alerts",
+      value: stats.expiringItemsCount,
+      change: `${stats.unreadAlerts} unread`,
+      trend: "up",
+      icon: AlertTriangle,
+      gradient: "linear-gradient(135deg, rgba(251,191,36,0.15), rgba(251,146,60,0.05))",
+      border: "rgba(251,191,36,0.2)",
+      iconColor: "#fbbf24",
+      changeColor: "#fbbf24",
+      description: "expiring soon",
+    },
+    {
+      title: "Monthly Revenue",
+      value: `₹${stats.thisMonthRevenue.toLocaleString()}`,
+      change: stats.revenueChange,
+      trend: stats.revenueTrend,
+      icon: DollarSign,
+      gradient: "linear-gradient(135deg, rgba(168,85,247,0.15), rgba(244,114,182,0.05))",
+      border: "rgba(168,85,247,0.2)",
+      iconColor: "#c084fc",
+      changeColor: "#34d399",
+      description: "this month",
+    },
+  ] : []
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{ position: "relative", zIndex: 1 }}>
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <h1 className="text-2xl font-bold text-white">
           Good morning, {user?.name?.split(" ")[0]} 👋
         </h1>
-        <p className="text-slate-400 mt-1">
+        <p className="mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>
           Here's what's happening with your restaurant today.
         </p>
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        {stats.map((stat, i) => {
-          const Icon = stat.icon
-          return (
-            <motion.div
-              key={stat.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: i * 0.1 }}
-            >
-              <Card className="bg-slate-900 border-slate-800 hover:border-slate-700 transition-colors">
-                <CardContent className="p-5">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-slate-400 text-sm">{stat.title}</p>
-                      <p className="text-2xl font-bold text-white mt-1">
-                        {stat.value}
-                      </p>
-                      <div className="flex items-center gap-1 mt-1">
-                        {stat.trend === "down" ? (
-                          <ArrowDownRight className="w-3 h-3 text-emerald-400" />
-                        ) : (
-                          <ArrowUpRight className="w-3 h-3 text-emerald-400" />
-                        )}
-                        <span className="text-emerald-400 text-xs font-medium">
-                          {stat.change}
-                        </span>
-                        <span className="text-slate-500 text-xs">
-                          {stat.description}
-                        </span>
-                      </div>
-                    </div>
-                    <div className={`p-2.5 rounded-lg border ${colorMap[stat.color]}`}>
-                      <Icon className="w-5 h-5" />
+      {loading ? (
+        <SkeletonDashboard />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          {statCards.map((stat, i) => {
+            const Icon = stat.icon
+            return (
+              <motion.div
+                key={stat.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+                style={{
+                  background: stat.gradient,
+                  backdropFilter: "blur(20px)",
+                  border: `1px solid ${stat.border}`,
+                  borderRadius: "16px", padding: "20px",
+                }}
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-sm mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>{stat.title}</p>
+                    <p className="text-2xl font-bold text-white">{stat.value}</p>
+                    <div className="flex items-center gap-1 mt-1">
+                      {stat.trend === "down"
+                        ? <ArrowDownRight className="w-3 h-3" style={{ color: stat.changeColor }} />
+                        : <ArrowUpRight className="w-3 h-3" style={{ color: stat.changeColor }} />
+                      }
+                      <span className="text-xs font-medium" style={{ color: stat.changeColor }}>{stat.change}</span>
+                      <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>{stat.description}</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )
-        })}
-      </div>
+                  <div className="p-2.5 rounded-xl" style={{ background: "rgba(255,255,255,0.06)" }}>
+                    <Icon className="w-5 h-5" style={{ color: stat.iconColor }} />
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
+      )}
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        {/* Waste Trend Chart */}
+        {/* Waste Trend - Real Data */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
+          style={glassStyle}
+          className="p-5"
         >
-          <Card className="bg-slate-900 border-slate-800">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-white text-base font-semibold">
-                  Waste vs Prediction
-                </CardTitle>
-                <Badge
-                  variant="outline"
-                  className="border-emerald-500/30 text-emerald-400 bg-emerald-500/10 text-xs"
-                >
-                  This Week
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={220}>
-                <AreaChart data={wasteData}>
-                  <defs>
-                    <linearGradient id="wasteGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f87171" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#f87171" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="predictGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#34d399" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                  <XAxis dataKey="day" stroke="#475569" tick={{ fontSize: 12 }} />
-                  <YAxis stroke="#475569" tick={{ fontSize: 12 }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#0f172a",
-                      border: "1px solid #1e293b",
-                      borderRadius: "8px",
-                      color: "#fff",
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="waste"
-                    stroke="#f87171"
-                    fill="url(#wasteGrad)"
-                    strokeWidth={2}
-                    name="Actual Waste"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="predicted"
-                    stroke="#34d399"
-                    fill="url(#predictGrad)"
-                    strokeWidth={2}
-                    name="Predicted"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+          <div className="flex items-center justify-between mb-4">
+            <p className="font-semibold text-white">Waste vs Prediction</p>
+            <span className="text-xs px-3 py-1 rounded-full font-medium" style={{
+              background: "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(244,114,182,0.1))",
+              border: "1px solid rgba(168,85,247,0.3)", color: "#c084fc",
+            }}>This Week</span>
+          </div>
+          <ResponsiveContainer width="100%" height={220}>
+            <AreaChart data={stats?.wasteByDay || []}>
+              <defs>
+                <linearGradient id="wasteGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#f87171" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#f87171" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="predictGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#a855f7" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+              <XAxis dataKey="day" stroke="rgba(255,255,255,0.2)" tick={{ fontSize: 12, fill: "rgba(255,255,255,0.4)" }} />
+              <YAxis stroke="rgba(255,255,255,0.2)" tick={{ fontSize: 12, fill: "rgba(255,255,255,0.4)" }} />
+              <Tooltip {...tooltipStyle} />
+              <Area type="monotone" dataKey="waste" stroke="#f87171" fill="url(#wasteGrad)" strokeWidth={2} name="Actual Waste (₹)" />
+              <Area type="monotone" dataKey="predicted" stroke="#a855f7" fill="url(#predictGrad)" strokeWidth={2} name="Predicted (₹)" />
+            </AreaChart>
+          </ResponsiveContainer>
         </motion.div>
 
-        {/* Demand Chart */}
+        {/* Demand Pattern */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
+          style={glassStyle}
+          className="p-5"
         >
-          <Card className="bg-slate-900 border-slate-800">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-white text-base font-semibold">
-                  Today's Demand Pattern
-                </CardTitle>
-                <Badge
-                  variant="outline"
-                  className="border-blue-500/30 text-blue-400 bg-blue-500/10 text-xs"
-                >
-                  Live
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={demandData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                  <XAxis dataKey="time" stroke="#475569" tick={{ fontSize: 12 }} />
-                  <YAxis stroke="#475569" tick={{ fontSize: 12 }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#0f172a",
-                      border: "1px solid #1e293b",
-                      borderRadius: "8px",
-                      color: "#fff",
-                    }}
-                  />
-                  <Bar
-                    dataKey="orders"
-                    fill="#3b82f6"
-                    radius={[4, 4, 0, 0]}
-                    name="Orders"
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+          <div className="flex items-center justify-between mb-4">
+            <p className="font-semibold text-white">Today's Demand Pattern</p>
+            <span className="text-xs px-3 py-1 rounded-full font-medium" style={{
+              background: "linear-gradient(135deg, rgba(244,114,182,0.2), rgba(251,146,60,0.1))",
+              border: "1px solid rgba(244,114,182,0.3)", color: "#f472b6",
+            }}>Live</span>
+          </div>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={demandData}>
+              <defs>
+                <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#a855f7" stopOpacity={1} />
+                  <stop offset="100%" stopColor="#f472b6" stopOpacity={0.8} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+              <XAxis dataKey="time" stroke="rgba(255,255,255,0.2)" tick={{ fontSize: 12, fill: "rgba(255,255,255,0.4)" }} />
+              <YAxis stroke="rgba(255,255,255,0.2)" tick={{ fontSize: 12, fill: "rgba(255,255,255,0.4)" }} />
+              <Tooltip {...tooltipStyle} />
+              <Bar dataKey="orders" fill="url(#barGradient)" radius={[6, 6, 0, 0]} name="Orders" />
+            </BarChart>
+          </ResponsiveContainer>
         </motion.div>
       </div>
 
@@ -288,41 +250,29 @@ export default function DashboardPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.5 }}
+        style={glassStyle}
+        className="p-5"
       >
-        <Card className="bg-slate-900 border-slate-800">
-          <CardHeader className="pb-2">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-emerald-400" />
-              <CardTitle className="text-white text-base font-semibold">
-                AI Recommendations
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {aiRecommendations.map((rec, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + i * 0.1 }}
-                className={cn(
-                  "flex items-start gap-3 p-3 rounded-lg border text-sm",
-                  rec.type === "warning" && "bg-amber-500/5 border-amber-500/20 text-amber-300",
-                  rec.type === "success" && "bg-emerald-500/5 border-emerald-500/20 text-emerald-300",
-                  rec.type === "info" && "bg-blue-500/5 border-blue-500/20 text-blue-300"
-                )}
-              >
-                <Sparkles className="w-4 h-4 mt-0.5 shrink-0" />
-                <p>{rec.message}</p>
-              </motion.div>
-            ))}
-          </CardContent>
-        </Card>
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles className="w-5 h-5" style={{ color: "#c084fc" }} />
+          <p className="font-semibold text-white">AI Recommendations</p>
+        </div>
+        <div className="space-y-3">
+          {aiRecommendations.map((rec, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 + i * 0.1 }}
+              className="flex items-start gap-3 p-3 rounded-xl text-sm"
+              style={{ background: rec.gradient, border: `1px solid ${rec.border}` }}
+            >
+              <Sparkles className="w-4 h-4 mt-0.5 shrink-0" style={{ color: rec.color }} />
+              <p style={{ color: "rgba(255,255,255,0.8)" }}>{rec.message}</p>
+            </motion.div>
+          ))}
+        </div>
       </motion.div>
     </div>
   )
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(" ")
 }
