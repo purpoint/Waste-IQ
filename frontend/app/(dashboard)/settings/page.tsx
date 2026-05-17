@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { useAuthStore } from "@/store/auth.store"
-import { Settings, User, Store, Shield, Bell, Palette } from "lucide-react"
+import { Settings, User, Store, Shield, Bell } from "lucide-react"
 
 const glassStyle = {
   background: "rgba(255,255,255,0.04)",
@@ -11,11 +11,12 @@ const glassStyle = {
   border: "1px solid rgba(255,255,255,0.08)",
   borderRadius: "16px",
 }
+
 interface Field {
   label: string
   placeholder: string
-  type: string
-  autoComplete: string
+  type?: string
+  autoComplete?: string
 }
 
 interface Toggle {
@@ -77,41 +78,6 @@ const sections: Section[] = [
       { label: "Confirm New Password", placeholder: "Confirm new password", type: "password", autoComplete: "new-password" },
     ],
   },
-
-  {
-    icon: Store,
-    title: "Restaurant",
-    description: "Your restaurant information and preferences",
-    color: "#c084fc",
-    fields: [
-      { label: "Restaurant Name", placeholder: "Restaurant name" },
-      { label: "Address", placeholder: "Restaurant address" },
-      { label: "Phone", placeholder: "+91 00000 00000" },
-    ],
-  },
-  {
-    icon: Bell,
-    title: "Notifications",
-    description: "Control when and how you get notified",
-    color: "#fbbf24",
-    toggles: [
-      { label: "Low stock alerts", description: "Get notified when items are running low" },
-      { label: "Expiry warnings", description: "Alert before items expire" },
-      { label: "AI recommendations", description: "Daily AI-powered insights" },
-      { label: "Waste reports", description: "Weekly waste summary" },
-    ],
-  },
-  {
-    icon: Shield,
-    title: "Security",
-    description: "Manage your password and account security",
-    color: "#34d399",
-    fields: [
-      { label: "Current Password", placeholder: "••••••••", type: "password" },
-      { label: "New Password", placeholder: "••••••••", type: "password" },
-      { label: "Confirm Password", placeholder: "••••••••", type: "password" },
-    ],
-  },
 ]
 
 export default function SettingsPage() {
@@ -140,7 +106,7 @@ export default function SettingsPage() {
           padding: "24px",
           background: "linear-gradient(135deg, rgba(168,85,247,0.1), rgba(244,114,182,0.05))",
           border: "1px solid rgba(168,85,247,0.2)",
-          display: "flex", alignItems: "center", gap: "20px",
+          display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap",
         }}
       >
         <div style={{
@@ -155,17 +121,19 @@ export default function SettingsPage() {
         <div style={{ flex: 1 }}>
           <p style={{ fontSize: "18px", fontWeight: "700", color: "white", margin: 0 }}>{user?.name}</p>
           <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)", margin: "4px 0" }}>{user?.email}</p>
-          <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+          <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap" }}>
             <span style={{
               background: "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(244,114,182,0.1))",
               border: "1px solid rgba(168,85,247,0.3)",
-              color: "#c084fc", fontSize: "11px", padding: "3px 10px", borderRadius: "99px", fontWeight: "500",
+              color: "#c084fc", fontSize: "11px", padding: "3px 10px",
+              borderRadius: "99px", fontWeight: "500",
             }}>
               {user?.role}
             </span>
             <span style={{
               background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)",
-              color: "#34d399", fontSize: "11px", padding: "3px 10px", borderRadius: "99px", fontWeight: "500",
+              color: "#34d399", fontSize: "11px", padding: "3px 10px",
+              borderRadius: "99px", fontWeight: "500",
             }}>
               {restaurant?.name}
             </span>
@@ -202,8 +170,12 @@ export default function SettingsPage() {
                 <Icon style={{ width: "18px", height: "18px", color: section.color }} />
               </div>
               <div>
-                <p style={{ fontSize: "15px", fontWeight: "600", color: "white", margin: 0 }}>{section.title}</p>
-                <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: 0 }}>{section.description}</p>
+                <p style={{ fontSize: "15px", fontWeight: "600", color: "white", margin: 0 }}>
+                  {section.title}
+                </p>
+                <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: 0 }}>
+                  {section.description}
+                </p>
               </div>
             </div>
 
@@ -211,14 +183,20 @@ export default function SettingsPage() {
             {section.fields && (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
                 {section.fields.map((field, fi) => (
-                  <div key={fi} style={{ gridColumn: section.fields!.length === 1 ? "1 / -1" : "auto" }}>
-                    <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", display: "block", marginBottom: "8px" }}>
+                  <div
+                    key={fi}
+                    style={{ gridColumn: section.fields!.length % 2 !== 0 && fi === section.fields!.length - 1 ? "1 / -1" : "auto" }}
+                  >
+                    <label style={{
+                      fontSize: "12px", color: "rgba(255,255,255,0.5)",
+                      display: "block", marginBottom: "8px",
+                    }}>
                       {field.label}
                     </label>
                     <input
                       type={field.type || "text"}
                       placeholder={field.placeholder}
-                      autoComplete={(field as any).autoComplete || "off"}
+                      autoComplete={field.autoComplete || "off"}
                       style={{
                         width: "100%", padding: "10px 14px",
                         background: "rgba(255,255,255,0.05)",
@@ -239,24 +217,26 @@ export default function SettingsPage() {
                 {section.toggles.map((toggle, ti) => (
                   <div key={ti} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div>
-                      <p style={{ fontSize: "14px", color: "white", margin: 0, fontWeight: "500" }}>{toggle.label}</p>
-                      <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: "2px 0 0" }}>{toggle.description}</p>
+                      <p style={{ fontSize: "14px", color: "white", margin: 0, fontWeight: "500" }}>
+                        {toggle.label}
+                      </p>
+                      <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: "2px 0 0" }}>
+                        {toggle.description}
+                      </p>
                     </div>
-                    {/* Toggle switch */}
-                    <div
-                      style={{
-                        width: "44px", height: "24px", borderRadius: "99px",
-                        background: ti % 2 === 0
-                          ? "linear-gradient(135deg, #a855f7, #f472b6)"
-                          : "rgba(255,255,255,0.1)",
-                        cursor: "pointer", position: "relative",
-                        transition: "all 0.2s", flexShrink: 0,
-                      }}
-                    >
+                    <div style={{
+                      width: "44px", height: "24px", borderRadius: "99px",
+                      background: ti % 2 === 0
+                        ? "linear-gradient(135deg, #a855f7, #f472b6)"
+                        : "rgba(255,255,255,0.1)",
+                      cursor: "pointer", position: "relative",
+                      transition: "all 0.2s", flexShrink: 0,
+                    }}>
                       <div style={{
                         width: "18px", height: "18px", borderRadius: "50%",
                         background: "white", position: "absolute",
-                        top: "3px", left: ti % 2 === 0 ? "23px" : "3px",
+                        top: "3px",
+                        left: ti % 2 === 0 ? "23px" : "3px",
                         transition: "all 0.2s",
                         boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
                       }} />
@@ -271,7 +251,8 @@ export default function SettingsPage() {
               <button style={{
                 background: "linear-gradient(135deg, #a855f7, #f472b6)",
                 border: "none", color: "white", padding: "10px 24px",
-                borderRadius: "10px", cursor: "pointer", fontSize: "13px", fontWeight: "600",
+                borderRadius: "10px", cursor: "pointer",
+                fontSize: "13px", fontWeight: "600",
                 boxShadow: "0 0 20px rgba(168,85,247,0.2)",
               }}>
                 Save {section.title}
