@@ -221,18 +221,20 @@ export default function SettingsPage() {
             )}
 
             {/* Save button */}
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button style={{
-                background: "linear-gradient(135deg, #a855f7, #f472b6)",
-                border: "none", color: "white", padding: "9px 20px",
-                borderRadius: "10px", cursor: "pointer", fontSize: "12px", fontWeight: "600",
-              }}>
-                Save {section.title}
-              </button>
-            </div>
-          </motion.div>
-        )
-      })}
-    </div>
+    <div style={{
+  display: "flex", justifyContent: "flex-end",
+  marginTop: "16px",
+  paddingTop: "16px",
+  borderTop: "1px solid rgba(255,255,255,0.06)",
+  }}>
+    <button style={{
+    background: "linear-gradient(135deg, #a855f7, #f472b6)",
+    border: "none", color: "white", padding: "10px 24px",
+    borderRadius: "10px", cursor: "pointer", fontSize: "13px",
+    fontWeight: "600", display: "flex", alignItems: "center", gap: "6px",
+    }}>
+    Save {section.title}
+    </button>
+  </div>
   )
 }
