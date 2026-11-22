@@ -13,6 +13,11 @@ const categories = ["Vegetables", "Fruits", "Dairy", "Meat", "Seafood", "Grains"
 const storageTypes = ["Refrigerated", "Frozen", "Dry Storage", "Room Temperature"]
 const units = ["kg", "g", "L", "ml", "pieces", "dozen", "boxes"]
 
+const emptyForm = {
+  name: "", quantity: "", unit: "kg", expiryDate: "",
+  costPrice: "", category: "Vegetables", supplier: "", storageType: "Refrigerated",
+}
+
 const glassStyle = {
   background: "rgba(255,255,255,0.04)",
   backdropFilter: "blur(20px)",
@@ -64,10 +69,8 @@ export default function InventoryPage() {
   const [search, setSearch] = useState("")
   const [open, setOpen] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [form, setForm] = useState({
-    name: "", quantity: "", unit: "kg", expiryDate: "",
-    costPrice: "", category: "Vegetables", supplier: "", storageType: "Refrigerated",
-  })
+  const [formError, setFormError] = useState("")
+  const [form, setForm] = useState(emptyForm)
 
   useEffect(() => { fetchInventory() }, [])
 
@@ -82,16 +85,31 @@ export default function InventoryPage() {
     }
   }
 
+  const handleOpenChange = (value: boolean) => {
+    setOpen(value)
+    if (!value) setFormError("")
+  }
+
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
+    setFormError("")
     try {
-      await addInventoryItemApi(form as any)
+      // Expiry date is optional — don't send an empty string to the API
+      const payload: any = { ...form }
+      if (!payload.expiryDate) delete payload.expiryDate
+      if (!payload.supplier) delete payload.supplier
+
+      await addInventoryItemApi(payload)
       await fetchInventory()
       setOpen(false)
-      setForm({ name: "", quantity: "", unit: "kg", expiryDate: "", costPrice: "", category: "Vegetables", supplier: "", storageType: "Refrigerated" })
-    } catch (error) {
-      console.error("Failed to add item:", error)
+      setForm(emptyForm)
+    } catch (error: any) {
+      const apiErrors = error?.response?.data?.errors
+      const message = apiErrors?.length
+        ? apiErrors.map((err: any) => err.message).join(", ")
+        : error?.response?.data?.message || "Could not add item. Please try again."
+      setFormError(message)
     } finally {
       setSaving(false)
     }
@@ -128,7 +146,7 @@ export default function InventoryPage() {
           <h1 className="text-xl font-bold text-white">Inventory</h1>
           <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Track and manage your ingredients</p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
             <button style={{
               background: "linear-gradient(135deg, #a855f7, #f472b6)",
@@ -147,6 +165,16 @@ export default function InventoryPage() {
             <DialogHeader>
               <DialogTitle style={{ color: "white" }}>Add Inventory Item</DialogTitle>
             </DialogHeader>
+
+            {formError && (
+              <div style={{
+                background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)",
+                color: "#f87171", fontSize: "13px", padding: "10px 14px", borderRadius: "10px",
+              }}>
+                {formError}
+              </div>
+            )}
+
             <form onSubmit={handleAdd} className="space-y-3 mt-2">
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2 space-y-1">
@@ -157,7 +185,7 @@ export default function InventoryPage() {
                 </div>
                 <div className="space-y-1">
                   <Label style={{ color: "rgba(255,255,255,0.6)", fontSize: "12px" }}>Quantity</Label>
-                  <Input type="number" placeholder="0" value={form.quantity}
+                  <Input type="number" min="0" step="any" placeholder="0" value={form.quantity}
                     onChange={(e) => setForm({ ...form, quantity: e.target.value })}
                     required style={inputStyle} className="placeholder:text-white/20" />
                 </div>
@@ -169,12 +197,12 @@ export default function InventoryPage() {
                 </div>
                 <div className="space-y-1">
                   <Label style={{ color: "rgba(255,255,255,0.6)", fontSize: "12px" }}>Cost Price (₹)</Label>
-                  <Input type="number" placeholder="0.00" value={form.costPrice}
+                  <Input type="number" min="0" step="any" placeholder="0.00" value={form.costPrice}
                     onChange={(e) => setForm({ ...form, costPrice: e.target.value })}
                     required style={inputStyle} className="placeholder:text-white/20" />
                 </div>
                 <div className="space-y-1">
-                  <Label style={{ color: "rgba(255,255,255,0.6)", fontSize: "12px" }}>Expiry Date</Label>
+                  <Label style={{ color: "rgba(255,255,255,0.6)", fontSize: "12px" }}>Expiry Date (optional)</Label>
                   <Input type="date" value={form.expiryDate}
                     onChange={(e) => setForm({ ...form, expiryDate: e.target.value })}
                     style={{ ...inputStyle, colorScheme: "dark" }} />
@@ -202,7 +230,8 @@ export default function InventoryPage() {
                 width: "100%", padding: "10px",
                 background: "linear-gradient(135deg, #a855f7, #f472b6)",
                 border: "none", color: "white", borderRadius: "10px",
-                fontSize: "14px", fontWeight: "600", cursor: "pointer",
+                fontSize: "14px", fontWeight: "600", cursor: saving ? "not-allowed" : "pointer",
+                opacity: saving ? 0.7 : 1,
                 display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
               }}>
                 {saving ? <><Loader2 style={{ width: "16px", height: "16px" }} className="animate-spin" />Saving...</> : "Add Item"}
@@ -212,7 +241,7 @@ export default function InventoryPage() {
         </Dialog>
       </motion.div>
 
-      {/* Stats — stack on mobile */}
+      {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
         {[
           { label: "Total Items", value: inventory.length, icon: Package, gradient: "linear-gradient(135deg, rgba(96,165,250,0.15), rgba(168,85,247,0.05))", border: "rgba(96,165,250,0.2)", color: "#60a5fa" },
@@ -330,6 +359,7 @@ export default function InventoryPage() {
                     <td style={{ padding: "12px 14px" }}>
                       <button
                         onClick={() => handleDelete(item.id)}
+                        aria-label={`Delete ${item.name}`}
                         style={{
                           background: "transparent", border: "none",
                           color: "rgba(255,255,255,0.3)", cursor: "pointer",
