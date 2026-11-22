@@ -52,6 +52,9 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening"
+
   useEffect(() => {
     fetchStats()
   }, [])
@@ -123,7 +126,7 @@ export default function DashboardPage() {
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <h1 className="text-2xl font-bold text-white">
-          Good morning, {user?.name?.split(" ")[0]} 👋
+          {greeting}, {user?.name?.split(" ")[0]} 👋
         </h1>
         <p className="mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>
           Here's what's happening with your restaurant today.
