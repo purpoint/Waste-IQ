@@ -10,9 +10,7 @@ const connectionString = process.env.DATABASE_URL!
 
 const pool = new pg.Pool({
   connectionString,
-  ssl: process.env.NODE_ENV === "production" || connectionString.includes("render.com")
-    ? { rejectUnauthorized: false }
-    : false,
+      ssl: connectionString.includes("localhost") ? false : { rejectUnauthorized: false },
 })
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
