@@ -210,7 +210,7 @@ export default function DashboardPage() {
               <YAxis stroke="rgba(255,255,255,0.2)" tick={{ fontSize: 12, fill: "rgba(255,255,255,0.4)" }} />
               <Tooltip {...tooltipStyle} />
               <Area type="monotone" dataKey="waste" stroke="#f87171" fill="url(#wasteGrad)" strokeWidth={2} name="Actual Waste (₹)" />
-              <Area type="monotone" dataKey="predicted" stroke="#a855f7" fill="url(#predictGrad)" strokeWidth={2} name="Predicted (₹)" />
+              <Area type="monotone" dataKey="predicted" stroke="#a855f7" fill="url(#predictGrad)" strokeWidth={2} name="Predicted — 7-day avg (₹)" />
             </AreaChart>
           </ResponsiveContainer>
         </motion.div>

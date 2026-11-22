@@ -163,14 +163,32 @@ export const getDashboardStats = async (req: AuthRequest, res: Response): Promis
       return date.toISOString().split("T")[0]
     })
 
+    // Total waste cost per day for the last 14 days (used for the moving average)
+    const dayKey = (d: Date) => d.toISOString().split("T")[0]
+    const costByDay = new Map<string, number>()
+    for (const log of [...thisWeekWaste, ...lastWeekWaste]) {
+      const key = dayKey(new Date(log.createdAt))
+      costByDay.set(key, (costByDay.get(key) || 0) + log.cost)
+    }
+
     const wasteByDay = last7Days.map((day) => {
       const dayLogs = thisWeekWaste.filter(
         (log) => new Date(log.createdAt).toISOString().split("T")[0] === day
       )
+
+      // Predicted = 7-day moving average: average daily waste cost of the 7 days before this day
+      const base = new Date(day)
+      let previousWeekTotal = 0
+      for (let i = 1; i <= 7; i++) {
+        const prev = new Date(base)
+        prev.setUTCDate(base.getUTCDate() - i)
+        previousWeekTotal += costByDay.get(dayKey(prev)) || 0
+      }
+
       return {
         day: new Date(day).toLocaleDateString("en-IN", { weekday: "short" }),
         waste: dayLogs.reduce((sum, log) => sum + log.cost, 0),
-        predicted: Math.floor(Math.random() * 500) + 200,
+        predicted: Math.round(previousWeekTotal / 7),
       }
     })
 
