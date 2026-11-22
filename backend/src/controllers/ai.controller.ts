@@ -131,3 +131,5 @@ const aiMessage = data.choices[0].message.content
     res.status(500).json({ success: false, message: "Internal server error" })
   }
 }
+
+"Keep answers under 150 words. Use short bullet points. Use a table only if the user asks for one."

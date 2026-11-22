@@ -94,3 +94,15 @@ body::before {
   background: rgba(168, 85, 247, 0.3);
   border-radius: 99px;
 }
+
+.ai-markdown p { margin: 0 0 8px; }
+.ai-markdown p:last-child { margin-bottom: 0; }
+.ai-markdown strong { color: #e9d5ff; font-weight: 600; }
+.ai-markdown ul, .ai-markdown ol { margin: 4px 0 8px; padding-left: 18px; }
+.ai-markdown ul { list-style: disc; }
+.ai-markdown ol { list-style: decimal; }
+.ai-markdown li { margin: 2px 0; }
+.ai-markdown h1, .ai-markdown h2, .ai-markdown h3 { font-size: 14px; font-weight: 700; color: white; margin: 10px 0 6px; }
+.ai-markdown table { display: block; overflow-x: auto; border-collapse: collapse; font-size: 12px; margin: 6px 0 10px; }
+.ai-markdown th, .ai-markdown td { border: 1px solid rgba(255,255,255,0.1); padding: 6px 10px; text-align: left; white-space: nowrap; }
+.ai-markdown th { background: rgba(168,85,247,0.15); color: #e9d5ff; }

@@ -1,5 +1,7 @@
 "use client"
 
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -340,7 +342,13 @@ export default function AIInsightsPage() {
                     border: msg.role === "assistant" ? "1px solid rgba(255,255,255,0.08)" : "none",
                     boxShadow: msg.role === "user" ? "0 0 20px rgba(168,85,247,0.2)" : "none",
                   }}>
-                    {msg.content}
+                    {msg.role === "assistant" ? (
+  <div className="ai-markdown">
+    <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+  </div>
+) : (
+  msg.content
+)}
                   </div>
                 </motion.div>
               ))}
