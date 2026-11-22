@@ -178,8 +178,8 @@ export default function WastePage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
         {[
           { label: "Total Loss", value: `₹${totalCost.toLocaleString()}`, icon: DollarSign, gradient: "linear-gradient(135deg, rgba(248,113,113,0.15), rgba(251,146,60,0.05))", border: "rgba(248,113,113,0.2)", color: "#f87171" },
-          { label: "Today", value: `${todayLogs.length} logs`, icon: AlertTriangle, gradient: "linear-gradient(135deg, rgba(251,191,36,0.15), rgba(251,146,60,0.05))", border: "rgba(251,191,36,0.2)", color: "#fbbf24" },
-          { label: "Total", value: `${wasteLogs.length} logs`, icon: TrendingDown, gradient: "linear-gradient(135deg, rgba(168,85,247,0.15), rgba(244,114,182,0.05))", border: "rgba(168,85,247,0.2)", color: "#c084fc" },
+          { label: "Today", value: `${todayLogs.length} ${todayLogs.length === 1 ? "log" : "logs"}`, icon: AlertTriangle, gradient: "linear-gradient(135deg, rgba(251,191,36,0.15), rgba(251,146,60,0.05))", border: "rgba(251,191,36,0.2)", color: "#fbbf24" },
+          { label: "Total", value: `${wasteLogs.length} ${wasteLogs.length === 1 ? "log" : "logs"}`, icon: TrendingDown, gradient: "linear-gradient(135deg, rgba(168,85,247,0.15), rgba(244,114,182,0.05))", border: "rgba(168,85,247,0.2)", color: "#c084fc" },
         ].map((stat, i) => {
           const Icon = stat.icon
           return (
